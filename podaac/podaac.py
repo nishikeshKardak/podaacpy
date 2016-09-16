@@ -14,7 +14,7 @@
 
 import requests
 from future.moves.urllib.parse import urlparse, urlencode
-from future.moves.urllib.request import urlretrieve
+from future.moves.urllib.request import urlopen
 from future.moves.urllib.error import HTTPError
 import http.client
 import os
@@ -462,12 +462,8 @@ class Podaac:
                     __file__), dataset_id + '.png')
             else:
                 path = path + '/' + dataset_id + '.png'
-            image = urlretrieve(url, path)
-
-        except HTTPError as error:
-            print(error)
-            raise
-
+            image = open(path, 'wb')
+            image.write(urlopen(url).read())
         except Exception:
             raise
 
@@ -525,7 +521,7 @@ class Podaac:
         return status
 
     def extract_l4_granule(self, dataset_id='', path=''):
-        '''This is an additional fucntion that we have provided apart \
+        '''This is an additional function that we have provided apart \
         from the availalble webservices. The extract_l4_granule helps \
         retrieve the level 4 datasets from openDap server directly, \
         accompanied by the search granule for retrieving granule name \
@@ -558,8 +554,10 @@ class Podaac:
                 path = os.path.join(os.path.dirname(__file__), granule_name)
             else:
                 path = path + '/' + granule_name
-            granule = urlretrieve(url, path)
-            if granule[1]['Content-Type'] == 'text/plain':
+            data = urlopen(url)
+            granule = open(path, 'wb')
+            granule.write(data.read())
+            if data.info()['content-type'] == 'text/plain':
                 raise Exception("Unexpected Error Occured")
 
         except Exception:

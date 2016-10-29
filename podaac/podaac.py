@@ -592,6 +592,7 @@ class Podaac:
                 path = os.path.join(os.path.dirname(__file__), granule_name)
             else:
                 path = path + '/' + granule_name
+            print(url)
             data = urlopen(url)
             if data.info()['content-type'] == 'text/plain':
                 raise Exception("Unexpected Error Occured")
